@@ -1,0 +1,101 @@
+{% extends "quiz/base.html" %}
+{% load static %}
+
+{% block title %}Skill up — Quiz & practice{% endblock %}
+{% block body_class %}su-body-landing{% endblock %}
+
+{% block body %}
+<div id="su-cookie" class="su-cookie" hidden>
+  <span>We use cookies to keep your session and improve your experience.</span>
+  <button type="button" id="su-cookie-ok">OK</button>
+</div>
+
+<div class="su-landing-frame">
+  <div class="su-landing-card">
+    <nav class="su-landing-nav">
+      {% url 'quiz:landing' as home_url %}
+      {% include "quiz/includes/logo.html" with logo_href=home_url variant="default" %}
+      <div class="su-landing-nav-mid">
+        <a href="{{ home_url }}">Home</a>
+        
+        
+      </div>
+      <div class="su-landing-nav-actions">
+        <button type="button" class="su-icon-btn" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <a href="{% url 'quiz:login' %}" class="su-btn su-btn-dark">Log in</a>
+        <a href="{% url 'quiz:signup' %}" class="su-btn su-btn-sun">Sign up</a>
+      </div>
+    </nav>
+
+    <section class="su-hero-teal" aria-label="Hero">
+      <div class="su-hero-dots su-hero-dots--tr"></div>
+      <div class="su-hero-dots su-hero-dots--bl"></div>
+      <div class="su-hero-grid">
+        <div class="su-hero-visual">
+          <img src="{% static 'quiz/img/hero-learn.svg' %}" width="520" height="400" alt="Illustration of a learner with laptop, books, and graduation cap">
+        </div>
+        <div class="su-hero-copy">
+          <p class="su-section-kicker">Landing experience</p>
+          <h2>Online quiz,<br>real progress</h2>
+          <p class="su-hero-lead">
+            Ten sharp questions per run. Pick your stack, dial the difficulty, and get instant feedback — the same calm, modern feel as your favorite learning apps.
+          </p>
+          <div class="su-hero-cta">
+            <a href="{% url 'quiz:signup' %}" class="su-btn su-btn-lg" style="background:linear-gradient(180deg,var(--orange-cta),var(--orange-hot));color:#fff!important;box-shadow:0 10px 28px rgba(234,88,12,0.35)">Start learning</a>
+            <a href="{% url 'quiz:login' %}" class="su-btn su-btn-outline su-btn-lg" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.45);color:#fff!important">Log in</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <footer class="su-landing-footer" id="footer">
+      <div class="su-footer-brand">
+        {% include "quiz/includes/logo.html" with logo_href=home_url variant="default" compact=1 %}
+        <p style="margin:0">© {% now "Y" %} Skill up.</p>
+      </div>
+      <div>
+        <h4>Features</h4>
+        <ul>
+          <li><a href="#personalize">Skill tracks</a></li>
+          <li><a href="{% url 'quiz:signup' %}">Sign up</a></li>
+          <li><a href="{% url 'quiz:login' %}">Log in</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Learn more</h4>
+        <ul>
+          <li><a href="#footer">FAQ</a></li>
+          <li><a href="#footer">Terms</a></li>
+          <li><a href="#footer">Privacy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Follow us</h4>
+        <div class="su-social">
+          <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var bar = document.getElementById("su-cookie");
+    var btn = document.getElementById("su-cookie-ok");
+    if (!bar || !btn) return;
+    try {
+      if (!localStorage.getItem("skillup_cookie_ok")) bar.hidden = false;
+    } catch (e) { bar.hidden = false; }
+    btn.addEventListener("click", function () {
+      try { localStorage.setItem("skillup_cookie_ok", "1"); } catch (e) {}
+      bar.hidden = true;
+    });
+  })();
+</script>
+{% endblock %}

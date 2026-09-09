@@ -1,0 +1,81 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Quiz — {{ language.name }} — Skill up{% endblock %}
+
+{% block content %}
+<div class="su-shell">
+  <div class="su-breadcrumb">
+    <a href="{% url 'quiz:dashboard' %}">Practice</a> ›
+    <a href="{% url 'quiz:select_level' language.slug %}">{{ language.name }}</a> ›
+    <strong>{{ difficulty_label }}</strong>
+  </div>
+  <h1 class="su-page-title">{{ language.name }} · {{ difficulty_label }}</h1>
+  <p class="su-page-sub">Answer all {{ quiz_size }} questions, then submit once.</p>
+
+  <div class="su-quiz-layout">
+    <form method="post" action="{% url 'quiz:take_quiz' language.slug difficulty %}" id="su-quiz-form">
+      {% csrf_token %}
+      {% for q in questions %}
+      <div class="su-q-card" data-q="{{ forloop.counter }}">
+        <h3><span class="su-q-num">{{ forloop.counter }}.</span> {{ q.text }}</h3>
+        <div class="su-choices">
+          <label class="su-choice">
+            <input type="radio" name="q_{{ q.id }}" value="a" required>
+            <span>{{ q.choice_a }}</span>
+          </label>
+          <label class="su-choice">
+            <input type="radio" name="q_{{ q.id }}" value="b">
+            <span>{{ q.choice_b }}</span>
+          </label>
+          <label class="su-choice">
+            <input type="radio" name="q_{{ q.id }}" value="c">
+            <span>{{ q.choice_c }}</span>
+          </label>
+          <label class="su-choice">
+            <input type="radio" name="q_{{ q.id }}" value="d">
+            <span>{{ q.choice_d }}</span>
+          </label>
+        </div>
+      </div>
+      {% endfor %}
+      <button type="submit" class="su-btn su-btn-primary su-btn-lg su-btn-block" style="margin-top:0.5rem">Submit answers</button>
+    </form>
+    <aside class="su-sidebar">
+      <h4>Quiz</h4>
+      <p style="margin:0;line-height:1.5"><strong>{{ language.name }}</strong><br>{{ difficulty_label }}</p>
+      <h4 style="margin-top:1rem">Progress</h4>
+      <p style="margin:0;font-size:0.85rem;color:var(--muted)"><span id="su-answered">0</span> / {{ quiz_size }} answered</p>
+      <div class="su-progress" aria-hidden="true"><span id="su-progress-bar" style="width:0%"></span></div>
+      <h4 style="margin-top:1rem">Tips</h4>
+      <ul style="margin:0;padding-left:1.1rem;color:var(--muted);font-size:0.85rem;line-height:1.5">
+        <li>Change an answer anytime before submit.</li>
+        <li>Leaving the page may reset the attempt.</li>
+      </ul>
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    var total = {{ quiz_size }};
+    var form = document.getElementById("su-quiz-form");
+    if (!form) return;
+    var bar = document.getElementById("su-progress-bar");
+    var label = document.getElementById("su-answered");
+    function update() {
+      var names = {};
+      var inputs = form.querySelectorAll('input[type="radio"]:checked');
+      inputs.forEach(function (el) {
+        names[el.name] = true;
+      });
+      var n = Object.keys(names).length;
+      if (label) label.textContent = String(n);
+      if (bar) bar.style.width = (100 * n / total) + "%";
+    }
+    form.addEventListener("change", update);
+    update();
+  })();
+</script>
+{% endblock %}

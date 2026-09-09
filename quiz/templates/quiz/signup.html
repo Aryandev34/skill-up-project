@@ -1,0 +1,37 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Sign up — Skill up{% endblock %}
+
+{% block body %}
+<div class="su-split">
+  <div class="su-split-left">
+    <div class="su-globe" aria-hidden="true"></div>
+    <div class="su-split-waves" aria-hidden="true"></div>
+    <div class="su-split-left-inner">
+      {% url 'quiz:landing' as home_url %}
+      {% include "quiz/includes/logo.html" with logo_href=home_url variant="inverse" %}
+      <h1>Join <strong>Skill up</strong></h1>
+      <p>Short quizzes, three difficulty levels, and a dashboard that feels premium — so you actually want to come back and practice.</p>
+      <a class="su-know" href="{% url 'quiz:login' %}">Already have an account? Log in →</a>
+    </div>
+  </div>
+  <div class="su-split-right">
+    <div class="su-form-card" style="max-width:420px;margin:0 auto;width:100%">
+      <h2>Create your <strong>account</strong></h2>
+      <p class="su-sub">One minute to sign up — then personalize your path.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="su-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {{ field.errors }}
+          {% if field.help_text %}<p class="helptext">{{ field.help_text }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="su-btn su-btn-primary su-btn-block su-btn-lg">Sign up</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

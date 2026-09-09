@@ -1,0 +1,52 @@
+{% extends "quiz/base.html" %}
+{% load static %}
+
+{% block title %}Log in — Skill up{% endblock %}
+
+{% block body %}
+<div class="su-split">
+  <div class="su-split-left">
+    <div class="su-globe" aria-hidden="true"></div>
+    <div class="su-split-waves" aria-hidden="true"></div>
+    <div class="su-split-left-inner">
+      {% url 'quiz:landing' as home_url %}
+      {% include "quiz/includes/logo.html" with logo_href=home_url variant="inverse" %}
+      <h1>Welcome back</h1>
+      <p>Jump into practice — pick a language, set Low, Medium, or High, and finish a focused 10-question sprint with instant scoring.</p>
+      <a class="su-know" href="{% url 'quiz:signup' %}">New here? Create an account →</a>
+    </div>
+  </div>
+  <div class="su-split-right">
+    <div class="su-form-card" style="max-width:420px;margin:0 auto;width:100%">
+      <h2>Log in to <strong>your account</strong></h2>
+      <p class="su-sub">We’re glad you’re back — let’s keep the streak going.</p>
+      {% if form.non_field_errors %}
+        <div class="su-msg su-msg-error">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <form method="post" action="{% url 'quiz:login' %}">
+        {% csrf_token %}
+        <div class="su-field">
+          <label for="id_username">Username</label>
+          <input type="text" name="username" id="id_username" required autofocus autocomplete="username" value="{{ form.username.value|default:'' }}">
+          {{ form.username.errors }}
+        </div>
+        <div class="su-field">
+          <label for="id_password">Password</label>
+          <input type="password" name="password" id="id_password" required autocomplete="current-password">
+          {{ form.password.errors }}
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <div class="su-form-row">
+          <label style="display:flex;align-items:center;gap:0.4rem;font-weight:600;cursor:pointer;color:var(--muted)">
+            <input type="checkbox" name="remember" style="width:auto;accent-color:var(--royal)"> Remember me
+          </label>
+        </div>
+        <button type="submit" class="su-btn su-btn-primary su-btn-block su-btn-lg">Log in</button>
+      </form>
+      <p style="margin-top:1.25rem;text-align:center;color:var(--muted);font-size:0.9rem">
+        No account? <a href="{% url 'quiz:signup' %}">Sign up</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

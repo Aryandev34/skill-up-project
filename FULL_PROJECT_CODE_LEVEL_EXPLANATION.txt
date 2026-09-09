@@ -1,0 +1,515 @@
+================================================================================
+SKILL UP (Quiz_E_learning) — Full Project Code-Level Explanation (End-to-End)
+================================================================================
+
+This document explains the entire project “from zero to working app”:
+- what the project is
+- folder structure and responsibilities
+- authentication (signup/login/logout) and redirects
+- how quiz questions are selected, shown, and validated
+- where answers/results are stored
+- SQLite database details (what’s inside, how migrations work)
+- seeding demo data and Django admin management
+- UI templates + CSS + small JavaScript used
+
+--------------------------------------------------------------------------------
+1) What this project is
+--------------------------------------------------------------------------------
+Skill Up is a Django-based e-learning quiz web application:
+- Guest users see a landing page that previews “tracks” (languages).
+- Users create an account or log in.
+- Logged-in users choose a track, then a difficulty level (Low/Medium/High).
+- The system serves a quiz of 10 multiple-choice questions.
+- After submission, the system:
+  - calculates the score
+  - shows feedback (correct/incorrect)
+  - saves the attempt to the database (history/progress)
+
+Tech stack used in this repo:
+- Python + Django 5.x (Django 5.0.4 per settings header)
+- SQLite database (db.sqlite3 in project root)
+- Server-rendered HTML using Django Templates
+- Custom CSS: quiz/static/quiz/css/skillup.css
+- Small inline JavaScript for progress bar + cookie banner
+- Font Awesome icons + Google Font “Plus Jakarta Sans”
+
+
+--------------------------------------------------------------------------------
+2) How this project is created (typical steps)
+--------------------------------------------------------------------------------
+The project follows a standard Django creation workflow:
+
+1) Create project
+- `django-admin startproject skillup`
+  This generates:
+  - skillup/settings.py
+  - skillup/urls.py
+  - skillup/wsgi.py / asgi.py (if present)
+  - manage.py
+
+2) Create app
+- `python manage.py startapp quiz`
+  This generates the app folder `quiz/` where you put:
+  - models.py (database tables)
+  - views.py (page logic)
+  - urls.py (app routes)
+  - templates/ and static/ (UI)
+
+3) Add the app to settings
+- In `skillup/settings.py`, add `'quiz'` inside `INSTALLED_APPS`
+
+4) Build models + migrate
+- Write models in `quiz/models.py`
+- Run:
+  - `python manage.py makemigrations`
+  - `python manage.py migrate`
+  This creates/updates SQLite tables in `db.sqlite3`
+
+5) Build pages (URLs → views → templates)
+- Define routes in `quiz/urls.py`
+- Write view functions/classes in `quiz/views.py`
+- Create templates in `quiz/templates/...`
+- Add CSS in `quiz/static/...`
+
+6) Add seed data command (optional, but used here)
+- Implement `quiz/management/commands/seed_skillup.py`
+- Then run:
+  - `python manage.py seed_skillup`
+
+
+--------------------------------------------------------------------------------
+3) Project structure (what each file does)
+--------------------------------------------------------------------------------
+
+ROOT
+- manage.py
+  - The command runner for Django.
+  - Example: runserver, migrate, seed_skillup.
+
+skillup/ (project package)
+- settings.py
+  - Global configuration: apps, middleware, templates, database, auth redirects.
+  - Database is SQLite: `BASE_DIR / 'db.sqlite3'`
+  - Auth redirect settings:
+    - LOGIN_URL = 'quiz:login'
+    - LOGIN_REDIRECT_URL = 'quiz:dashboard'
+    - LOGOUT_REDIRECT_URL = 'quiz:landing'
+
+- urls.py
+  - Root URL routes:
+    - /admin/ → Django admin site
+    - / → includes quiz.urls (so quiz app owns the website pages)
+
+quiz/ (main Django app)
+- models.py
+  - Defines DB tables: Language, Question, QuizAttempt.
+
+- forms.py
+  - Defines SignUpForm (based on Django UserCreationForm) and sets widgets’ CSS class.
+
+- views.py
+  - Implements the application flow:
+    - landing page
+    - signup
+    - login/logout (customized templates)
+    - dashboard
+    - level selection
+    - take quiz (GET shows questions, POST grades + stores attempt)
+
+- urls.py
+  - App routing (maps URL paths to view functions/classes).
+
+- templates/
+  - Django template HTML for each page and a shared base layout.
+
+- static/
+  - CSS + images (e.g., the landing hero illustration).
+
+- management/commands/seed_skillup.py
+  - Django management command that creates demo tracks + questions in DB.
+
+
+--------------------------------------------------------------------------------
+4) Authentication system (Signup / Login / Logout)
+--------------------------------------------------------------------------------
+
+4.1) What “authentication” means in Django here
+Django provides a full user system out of the box:
+- Users are stored in database tables created by Django auth migrations.
+- Passwords are not stored as plain text; Django stores hashed passwords.
+- Login sets a session (server-tracked) so future requests know the user identity.
+
+In this project, authentication is used to protect quiz pages:
+- Only logged-in users can access:
+  - dashboard
+  - select_level
+  - take_quiz
+Guests can access:
+  - landing, signup, login
+
+4.2) Signup (creating an account)
+Files involved:
+- `quiz/forms.py` → SignUpForm
+- `quiz/views.py` → signup()
+- `quiz/templates/quiz/signup.html` → signup UI
+
+How signup works (request flow)
+1) User visits /signup/
+2) GET request:
+   - `signup()` creates an empty SignUpForm
+   - renders template with the form
+3) POST request (submit form):
+   - `signup()` builds SignUpForm(request.POST)
+   - `form.is_valid()` checks:
+     - username rules
+     - password rules (Django validators)
+     - password confirmation
+   - if valid:
+     - `user = form.save()` creates a Django User row
+     - `login(request, user)` signs user in immediately
+     - adds a success message
+     - redirects to dashboard
+
+4.3) Login (existing account)
+Files involved:
+- `quiz/views.py` → SkillUpLoginView(LoginView)
+- `quiz/templates/registration/login.html` → login UI
+
+How login works
+- Django LoginView validates username/password.
+- If correct:
+  - Django creates a session so the user becomes authenticated
+  - then redirects (LOGIN_REDIRECT_URL → dashboard)
+
+4.4) Logout
+Files involved:
+- `quiz/views.py` → SkillUpLogoutView(LogoutView)
+- `quiz/templates/quiz/base.html` → logout button/form in topbar
+
+How logout works
+- In `base.html`, logout is a POST form (CSRF protected).
+- On submit:
+  - Django clears authentication from the session
+  - redirects to landing (next_page / LOGOUT_REDIRECT_URL)
+
+4.5) Redirect rules
+Configured in `skillup/settings.py`:
+- LOGIN_URL:
+  - If a user tries to open a login-protected page, Django redirects to /login/
+- LOGIN_REDIRECT_URL:
+  - After successful login, user goes to /dashboard/
+- LOGOUT_REDIRECT_URL:
+  - After logout, go to /
+
+
+--------------------------------------------------------------------------------
+5) Database (SQLite) — what is stored and where
+--------------------------------------------------------------------------------
+
+5.1) What SQLite is in this project
+- SQLite is a file-based database.
+- The database file is:
+  - `db.sqlite3` in the project root (BASE_DIR).
+
+In Django, SQLite is configured by:
+`skillup/settings.py`:
+  DATABASES = {
+    'default': {
+      'ENGINE': 'django.db.backends.sqlite3',
+      'NAME': BASE_DIR / 'db.sqlite3',
+    }
+  }
+
+5.2) What tables exist in SQLite
+There are 2 categories:
+
+A) Django built-in tables (created by migrate)
+- auth_user (users)
+- django_session (session storage)
+- django_admin_log, etc.
+- plus tables for permissions/groups/contenttypes
+
+B) Your app tables (from quiz/models.py)
+- quiz_language
+- quiz_question
+- quiz_quizattempt
+
+5.3) What each app table stores
+
+quiz_language (model: Language)
+- Track list shown in landing/dashboard.
+- Fields:
+  - name (display name)
+  - slug (used in URLs)
+  - icon_class (Font Awesome class for UI)
+  - blurb (subtitle shown in select_level page)
+  - order (sorting)
+
+quiz_question (model: Question)
+- The question bank for quizzes.
+- Fields:
+  - language_id (FK)
+  - difficulty (low/med/high)
+  - text
+  - choice_a/choice_b/choice_c/choice_d
+  - correct (a/b/c/d)
+
+quiz_quizattempt (model: QuizAttempt)
+- Stores completed quiz submissions:
+  - user_id (who took it)
+  - language_id
+  - difficulty
+  - score and total (10)
+  - created_at timestamp
+
+5.4) How database tables are created (migrations)
+- When you write models, Django requires migrations to create the SQL schema.
+Typical workflow:
+- `python manage.py makemigrations` → generates migration files under `quiz/migrations/`
+- `python manage.py migrate` → applies migrations to SQLite
+
+If you remove `db.sqlite3`, you must run migrate again, then seed again.
+
+
+--------------------------------------------------------------------------------
+6) Quiz flow (questions selection, display, session storage, submission grading)
+--------------------------------------------------------------------------------
+
+Important constants in `quiz/views.py`:
+- QUIZ_SIZE = 10
+- SESSION_QUIZ_KEY = "skillup_quiz"
+
+6.1) Page-by-page user journey
+
+Step 1: Landing (guest)
+- URL: /
+- View: landing()
+- Template: quiz/landing.html
+- Behavior:
+  - if user is authenticated → redirect to dashboard
+  - else show languages preview grid (clicking prompts signup)
+
+Step 2: Dashboard (logged in)
+- URL: /dashboard/
+- View: dashboard() [login_required]
+- Template: quiz/dashboard.html
+- Behavior:
+  - loads languages
+  - displays them as cards linking to select_level
+
+Step 3: Select difficulty level
+- URL: /language/<slug>/
+- View: select_level() [login_required]
+- Template: quiz/select_level.html
+- Behavior:
+  - counts questions per difficulty in DB
+  - marks a level “ready” only if it has >= 10 questions
+  - UI disables “Start quiz” if not enough questions
+
+Step 4: Take quiz
+- URL: /language/<slug>/quiz/<difficulty>/
+- View: take_quiz() [login_required, GET+POST]
+- Template (GET): quiz/take_quiz.html
+- Template (POST result): quiz/results.html
+
+6.2) How questions are chosen (GET request)
+When user opens the quiz page (GET):
+- Validate difficulty is one of: low, med, high.
+- Query DB for all questions matching (language, difficulty).
+- Build a pool of question IDs.
+- If pool has fewer than 10:
+  - show an error message
+  - redirect back to select_level
+- Else:
+  - choose 10 IDs randomly: random.sample(pool, 10)
+  - store them in Django session under SESSION_QUIZ_KEY:
+    {
+      "slug": slug,
+      "difficulty": difficulty,
+      "question_ids": [10 ids...]
+    }
+  - load those Question objects and render take_quiz.html
+
+Why store IDs in session?
+- It “freezes” the quiz set:
+  - The POST grading uses the same IDs
+  - The user can’t accidentally get a new random set when submitting
+
+Where are sessions stored?
+- By default, Django stores session data in the database table `django_session`.
+- The browser holds only a session cookie key; the session content is server-side.
+
+6.3) How questions are displayed (HTML template)
+Template: `quiz/templates/quiz/take_quiz.html`
+- It loops through `questions` and renders:
+  - question text: `{{ q.text }}`
+  - choices: `{{ q.choice_a }}`, etc.
+- Inputs are radio buttons where:
+  - name is `q_{{ q.id }}` (example: q_42)
+  - value is one letter a/b/c/d
+- First option has `required` so user must answer each question before submit.
+
+6.4) Progress sidebar (small JavaScript)
+In `take_quiz.html` extra_js:
+- Script counts checked radio groups in the form
+- Updates:
+  - answered label: “n / 10 answered”
+  - progress bar width in %
+This is purely UI; grading still happens server-side in Django.
+
+6.5) Submitting answers (POST request) and grading
+When user presses “Submit answers” (POST):
+- View reads SESSION_QUIZ_KEY.
+- Validates:
+  - session exists
+  - session slug/difficulty matches the current URL
+  - the questions in DB still match the session’s IDs
+- For each question:
+  - read the posted value using key q_<id>
+  - compare with `question.correct`
+  - compute score
+  - create “details” rows for results view
+
+6.6) Storing results permanently (QuizAttempt)
+After grading:
+- Creates a `QuizAttempt` DB row:
+  - user
+  - language
+  - difficulty
+  - score
+  - total (10)
+  - created_at auto timestamp
+- Deletes SESSION_QUIZ_KEY from session
+  (so the attempt is finished and not re-submitted accidentally)
+
+6.7) Results page
+Template: `quiz/templates/quiz/results.html`
+- Shows:
+  - score ring (CSS conic-gradient uses `--p: {{ percent }}`)
+  - review section:
+    - green for correct
+    - red for incorrect with correct answer text
+
+
+--------------------------------------------------------------------------------
+7) Admin panel (managing languages/questions/users)
+--------------------------------------------------------------------------------
+
+URL:
+- /admin/
+Enabled by default in Django:
+- `skillup/urls.py` includes admin route
+
+Use cases:
+- Add/edit/delete Languages
+- Add/edit/delete Questions
+- Manage users (create staff accounts, reset passwords, etc.)
+
+Important for the quiz:
+- A difficulty only becomes “ready” if it has at least 10 questions.
+- Admin can add more questions to unlock levels.
+
+
+--------------------------------------------------------------------------------
+8) Seeding demo data (seed_skillup command)
+--------------------------------------------------------------------------------
+
+File:
+- quiz/management/commands/seed_skillup.py
+
+Run:
+- `python manage.py seed_skillup`
+
+What it does:
+- Deletes old Language and Question rows
+- Creates 5 demo languages:
+  Python, Java, JavaScript, SQL, React
+- Inserts multiple questions per difficulty per language
+Why it matters:
+- Your UI checks “ready” = count >= 10.
+- Seeding ensures each level has enough questions to run a full 10-question quiz.
+
+
+--------------------------------------------------------------------------------
+9) UI system (templates + static CSS)
+--------------------------------------------------------------------------------
+
+9.1) Base layout
+Template:
+- quiz/templates/quiz/base.html
+Responsibilities:
+- Loads CSS and external fonts/icons
+- Shows sticky topbar when logged in
+- Shows Django messages
+- Provides main block structure: `{% block content %}`
+
+9.2) Key pages and what they show
+- landing.html
+  - hero marketing UI, track preview cards, CTA to signup/login
+- signup.html / registration/login.html
+  - split screen layout: left branding panel + right form panel
+- dashboard.html
+  - language grid (cards)
+- select_level.html
+  - difficulty cards with “ready/not ready” button behavior
+- take_quiz.html
+  - quiz form with 10 question cards + progress sidebar
+- results.html
+  - score ring + review list + action buttons
+
+9.3) Styling (CSS)
+File:
+- quiz/static/quiz/css/skillup.css
+It defines:
+- colors, shadows, spacing, typography variables
+- reusable buttons, cards, responsive grids
+- quiz question card layout and selected option styling
+- results ring and review item styles
+
+
+--------------------------------------------------------------------------------
+10) Security and reliability notes (important in viva/teacher explanation)
+--------------------------------------------------------------------------------
+
+- CSRF Protection:
+  - All POST forms include `{% csrf_token %}`
+  - Django middleware enforces CSRF on unsafe methods.
+
+- Login protection:
+  - `@login_required` protects dashboard/levels/quiz.
+  - Guests can’t take quizzes without logging in.
+
+- Session-based quiz integrity:
+  - Storing question IDs in session prevents mismatch between shown and graded questions.
+  - If session expires, user is asked to start again.
+
+- Password security:
+  - Django stores hashed passwords by default (not plain text).
+
+
+--------------------------------------------------------------------------------
+11) How to run (full)
+--------------------------------------------------------------------------------
+From the project folder (same folder as manage.py):
+
+1) Create and activate venv (Windows)
+  python -m venv .venv
+  .venv\Scripts\activate
+
+2) Install requirements
+  pip install -r requirements.txt
+
+3) Setup database
+  python manage.py migrate
+
+4) Load demo data (recommended)
+  python manage.py seed_skillup
+
+5) Start server
+  python manage.py runserver
+
+Then open:
+- http://127.0.0.1:8000/
+
+
+End of file.

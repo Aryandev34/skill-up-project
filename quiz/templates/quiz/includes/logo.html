@@ -1,0 +1,22 @@
+{% comment %}
+  logo_href: URL
+  variant: default (blue on light) | inverse (light on teal/dark) | compact (smaller nav)
+{% endcomment %}
+<a href="{{ logo_href }}" class="su-brandmark su-brandmark--{{ variant|default:'default' }}{% if compact %} su-brandmark--compact{% endif %}" aria-label="Skill up — home">
+  <span class="su-brandmark__cube" aria-hidden="true">
+    <span class="su-brandmark__cube-inner">S</span>
+    <span class="su-brandmark__cube-glow"></span>
+  </span>
+  <span class="su-brandmark__type">
+    <span class="su-brandmark__row1">
+      <span class="su-brandmark__kill">kill</span>
+    </span>
+    <span class="su-brandmark__row2">
+      <span class="su-brandmark__up">up</span>
+      <svg class="su-brandmark__arrow" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M12 5l8 12H4L12 5z"/>
+      </svg>
+    </span>
+    <span class="su-brandmark__gold"></span>
+  </span>
+</a>

@@ -1,0 +1,35 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}{{ language.name }} — Skill up{% endblock %}
+
+{% block content %}
+<div class="su-shell">
+  <div class="su-breadcrumb">
+    <a href="{% url 'quiz:dashboard' %}">Practice</a> › <strong>{{ language.name }}</strong>
+  </div>
+  <p class="su-section-kicker" style="color:var(--royal)">Choose intensity</p>
+  <h1 class="su-page-title">{{ language.name }}</h1>
+  <p class="su-page-sub">{{ language.blurb }} Pick a difficulty — each run has 10 questions.</p>
+
+  <div class="su-level-grid">
+    {% for row in levels %}
+    <div class="su-level-card">
+      <span class="su-badge {% if row.value == 'low' %}su-badge-low{% elif row.value == 'med' %}su-badge-med{% else %}su-badge-high{% endif %}">{{ row.label }}</span>
+      <h3>{{ row.label }} intensity</h3>
+      <p>
+        {% if row.ready %}
+          <strong>{{ row.count }}</strong> questions in the bank — you’re good to go.
+        {% else %}
+          Only <strong>{{ row.count }}</strong> of {{ min_needed }} questions needed. Add more in admin or re-seed.
+        {% endif %}
+      </p>
+      {% if row.ready %}
+      <a class="su-btn su-btn-primary su-btn-block" href="{% url 'quiz:take_quiz' language.slug row.value %}">Start quiz</a>
+      {% else %}
+      <button type="button" class="su-btn su-btn-outline su-btn-block" disabled style="opacity:0.55;cursor:not-allowed">Not enough questions</button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

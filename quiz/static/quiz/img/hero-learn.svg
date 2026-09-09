@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="gTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7dd3c4"/>
+      <stop offset="100%" stop-color="#4db6ac"/>
+    </linearGradient>
+    <linearGradient id="gBook1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="gBook2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="gBook3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <!-- floor -->
+  <path fill="#b2dfdb" opacity="0.55" d="M40 290 L260 200 L480 290 L260 380 Z"/>
+  <path stroke="#ffffff" stroke-opacity="0.35" stroke-width="1" d="M60 290 L260 210 L440 290"/>
+  <!-- back books stack -->
+  <g filter="url(#soft)">
+    <path fill="url(#gBook3)" d="M120 248 L168 224 L196 236 L148 260 Z"/>
+    <path fill="#047857" opacity="0.35" d="M120 248 L148 260 L148 272 L120 260 Z"/>
+    <path fill="#6ee7b7" d="M168 224 L196 236 L196 248 L168 236 Z"/>
+    <path fill="url(#gBook1)" d="M132 232 L188 200 L220 216 L164 248 Z"/>
+    <path fill="#b45309" opacity="0.4" d="M132 232 L164 248 L164 262 L132 246 Z"/>
+    <path fill="#fcd34d" d="M188 200 L220 216 L220 228 L188 212 Z"/>
+    <path fill="url(#gBook2)" d="M148 218 L210 182 L246 202 L184 238 Z"/>
+    <path fill="#1e40af" opacity="0.35" d="M148 218 L184 238 L184 254 L148 234 Z"/>
+    <path fill="#93c5fd" d="M210 182 L246 202 L246 216 L210 196 Z"/>
+  </g>
+  <!-- laptop base -->
+  <g filter="url(#soft)">
+    <path fill="#1e293b" d="M238 268 L318 228 L352 244 L272 284 Z"/>
+    <path fill="#334155" d="M238 268 L272 284 L272 292 L238 276 Z"/>
+    <path fill="#0ea5e9" opacity="0.85" d="M248 258 L308 228 L338 242 L278 272 Z"/>
+    <path fill="#e0f2fe" opacity="0.9" d="M256 252 L302 230 L328 242 L282 264 Z"/>
+    <path stroke="#fff" stroke-width="2" stroke-linecap="round" d="M268 248 L312 248 M276 256 L300 256"/>
+  </g>
+  <!-- character body -->
+  <g filter="url(#soft)">
+    <ellipse fill="#fca5a5" cx="268" cy="198" rx="22" ry="24"/>
+    <path fill="#1e3a8a" d="M248 214 L288 194 L296 230 L252 252 Z"/>
+    <path fill="#1d4ed8" d="M252 220 L276 208 L282 238 L258 250 Z"/>
+    <path fill="#1e40af" d="M258 250 L282 238 L286 268 L262 282 Z"/>
+    <path fill="#172554" d="M262 282 L286 268 L292 300 L268 312 Z"/>
+    <!-- arm up -->
+    <path fill="#fca5a5" d="M286 208 L308 188 L318 198 L296 218 Z"/>
+    <circle fill="#fca5a5" cx="314" cy="182" r="10"/>
+  </g>
+  <!-- grad cap -->
+  <g filter="url(#soft)">
+    <path fill="#111827" d="M232 178 L278 156 L324 178 L278 200 Z"/>
+    <path fill="#374151" d="M278 156 L324 178 L324 186 L278 164 Z"/>
+    <path stroke="#fbbf24" stroke-width="3" d="M278 200 L278 214"/>
+    <circle fill="#fbbf24" cx="278" cy="218" r="4"/>
+  </g>
+  <!-- magnifier -->
+  <g filter="url(#soft)">
+    <circle stroke="#1e293b" stroke-width="10" cx="360" cy="300" r="36" fill="#e0f2fe" fill-opacity="0.7"/>
+    <path stroke="#1e293b" stroke-width="10" stroke-linecap="round" d="M386 326 L418 358"/>
+  </g>
+  <!-- diploma -->
+  <g filter="url(#soft)">
+    <rect x="372" y="168" width="56" height="72" rx="4" transform="skewY(-8)" fill="#fff" stroke="#cbd5e1"/>
+    <circle cx="400" cy="200" r="10" fill="#ef4444" opacity="0.85"/>
+    <path stroke="#f97316" stroke-width="4" d="M384 228 L416 228"/>
+    <path fill="#fbbf24" d="M368 232 L372 248 L388 244 Z"/>
+    <path fill="#fbbf24" d="M432 228 L428 244 L412 240 Z"/>
+  </g>
+  <!-- decorative dots -->
+  <circle cx="48" cy="56" r="4" fill="#fff" opacity="0.5"/>
+  <circle cx="72" cy="40" r="3" fill="#fff" opacity="0.35"/>
+  <circle cx="420" cy="48" r="4" fill="#fff" opacity="0.45"/>
+  <circle cx="444" cy="72" r="3" fill="#fff" opacity="0.3"/>
+</svg>

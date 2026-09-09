@@ -1,0 +1,100 @@
+================================================================================
+SKILL UP — 15-MINUTE DEMO GUIDE FOR YOUR TEACHER
+================================================================================
+
+WHAT THIS WEBSITE IS (in one sentence)
+--------------------------------------
+Skill Up is an e-learning quiz web app: learners sign up, choose a programming
+topic (language/track), pick a difficulty level, answer 10 multiple-choice
+questions per quiz, then see a score and a review of each answer. Progress is
+saved per user in the database.
+
+
+MAIN FEATURES TO SHOW
+---------------------
+1. Landing page — overview of available skills/languages (for guests).
+2. Sign up / Log in — Django’s built-in user accounts; after login, users go
+   to the dashboard.
+3. Dashboard — lists tracks (languages) and how many questions exist per track.
+4. Pick a level — Low, Medium, or High difficulty (only levels with enough
+   questions in the database are ready for a full quiz).
+5. Take quiz — 10 random questions from that track and level; submit answers.
+6. Results — score out of 10, percentage, and per-question correct/incorrect
+   with the right answer highlighted.
+7. History — each completed quiz is stored as a “quiz attempt” (user, language,
+   difficulty, score, date).
+8. Admin (optional to mention) — Django admin at /admin/ to manage languages,
+   questions, and users if you use a staff account.
+
+
+TECHNOLOGIES YOU USE
+--------------------
+Backend / framework
+  • Python
+  • Django 5.x (MVC-style: URLs → views → templates + models)
+
+Database
+  • SQLite (file-based, good for development and demos; stored as db.sqlite3)
+
+Frontend (how pages look)
+  • Server-rendered HTML using Django Templates (not a separate React/Vue app)
+  • Custom CSS: quiz/static/quiz/css/skillup.css
+  • Google Fonts: Plus Jakarta Sans
+  • Font Awesome 6 (icons for languages/skills)
+
+Security & sessions (built into Django)
+  • User authentication (login, logout, password handling)
+  • CSRF protection on forms
+  • Sessions used to hold the current quiz’s question IDs until submit
+
+Project layout (short)
+  • Project package: skillup/ (settings, root urls)
+  • App: quiz/ (models, views, urls, templates, static files)
+  • manage.py — run server, migrations, and management commands
+
+Data & demo content
+  • Models: Language, Question (with 4 choices + correct letter), QuizAttempt
+  • Optional: python manage.py seed_skillup — loads sample languages/questions
+    if your project includes that command (for a full demo).
+
+
+SUGGESTED 15-MINUTE DEMO FLOW
+-----------------------------
+Minutes 0–2   Intro: “This is Skill Up — practice quizzes for coding topics.”
+              Mention stack: Django + SQLite + templates + CSS.
+
+Minutes 2–4   Landing → Sign up a test user (or log in). Show dashboard.
+
+Minutes 4–8   Open one language → choose a difficulty → take the quiz (answer
+              a few visibly correct/wrong to show scoring).
+
+Minutes 8–11  Results page: score, review. Optionally mention that attempts
+              are saved in the database.
+
+Minutes 11–13 Brief code/architecture: “URLs in quiz/urls.py, logic in
+              views.py, data in models.py, pages in templates/.”
+
+Minutes 13–15 Q&A. If asked about deployment: “Could use PostgreSQL and a
+              host like PythonAnywhere, Railway, or a VPS with Gunicorn.”
+
+
+HOW TO RUN IT BEFORE CLASS
+--------------------------
+From the Quiz_E_learning folder (where manage.py is):
+
+  python -m venv .venv
+  .venv\Scripts\activate          (Windows)
+  pip install -r requirements.txt
+  python manage.py migrate
+  python manage.py seed_skillup   (if you use seeded data)
+  python manage.py runserver
+
+Open http://127.0.0.1:8000/ in the browser.
+
+
+ONE-LINE “ELEVATOR PITCH”
+-------------------------
+“I built Skill Up with Django: users log in, take 10-question quizzes by topic
+and difficulty, get instant feedback, and all attempts are stored in SQLite.”
+
+================================================================================

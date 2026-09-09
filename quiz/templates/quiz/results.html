@@ -1,0 +1,40 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Results — Skill up{% endblock %}
+
+{% block content %}
+<div class="su-shell" style="max-width:640px">
+  <div class="su-breadcrumb">
+    <a href="{% url 'quiz:dashboard' %}">Practice</a> ›
+    <a href="{% url 'quiz:select_level' language.slug %}">{{ language.name }}</a> ›
+    <strong>Results</strong>
+  </div>
+  <h1 class="su-page-title" style="text-align:center">Nice work</h1>
+  <p class="su-page-sub" style="text-align:center">{{ language.name }} · {{ difficulty_label }}</p>
+
+  <div class="su-result-ring" style="--p: {{ percent }}">
+    <div class="su-result-ring-inner">{{ score }}/{{ total }}</div>
+  </div>
+  <p style="text-align:center;font-size:1.1rem;margin:0 0 2rem">
+    You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong> ({{ percent }}%).
+  </p>
+
+  <h2 style="font-size:1rem;margin:0 0 0.75rem">Review</h2>
+  {% for item in details %}
+  <div class="su-result-detail {% if item.correct %}ok{% else %}bad{% endif %}">
+    <strong>{{ item.question.text }}</strong><br>
+    {% if item.correct %}
+      <span style="color:#047857">Correct.</span>
+    {% else %}
+      <span style="color:#991b1b">Your answer: {{ item.picked|default:"—"|upper }}. Correct: {{ item.question.correct_text }}</span>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;justify-content:center">
+    <a class="su-btn su-btn-primary" href="{% url 'quiz:take_quiz' language.slug difficulty %}">Try again</a>
+    <a class="su-btn su-btn-outline" href="{% url 'quiz:select_level' language.slug %}">Change level</a>
+    <a class="su-btn su-btn-outline" href="{% url 'quiz:dashboard' %}">Other languages</a>
+  </div>
+</div>
+{% endblock %}

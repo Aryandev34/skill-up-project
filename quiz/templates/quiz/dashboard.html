@@ -1,0 +1,21 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Practice — Skill up{% endblock %}
+
+{% block content %}
+<div class="su-shell" id="skills">
+  <p class="su-section-kicker" style="color:var(--royal)">Your dashboard</p>
+  <h1 class="su-page-title">Personalize your quiz experience</h1>
+  <p class="su-page-sub">Choose a track — each quiz is 10 questions. You’ll pick Low, Medium, or High on the next screen.</p>
+  <div class="su-grid-skills">
+    {% for lang in languages %}
+    <a class="su-skill-card" href="{% url 'quiz:select_level' lang.slug %}">
+      <span>{{ lang.name }}</span>
+      <i class="{{ lang.icon_class }}" aria-hidden="true"></i>
+    </a>
+    {% empty %}
+    <p style="grid-column:1/-1">No languages yet. Run <code>python manage.py seed_skillup</code> and refresh.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

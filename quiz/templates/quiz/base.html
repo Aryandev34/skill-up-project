@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Skill up{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{% static 'quiz/css/skillup.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <div id="su-cookie" class="su-cookie" hidden>
+    <span>We use cookies to keep your session and improve your experience.</span>
+    <button type="button" id="su-cookie-ok">OK</button>
+  </div>
+  {% block body %}
+    {% if request.user.is_authenticated %}
+    <header class="su-topbar">
+      {% url 'quiz:dashboard' as dash_url %}
+      {% include "quiz/includes/logo.html" with logo_href=dash_url variant="default" compact=1 %}
+      <nav class="su-nav-links">
+        <a href="{% url 'quiz:dashboard' %}">Practice</a>
+        <a href="{% url 'quiz:dashboard' %}#skills">Skills</a>
+        <span style="color:var(--line);user-select:none">|</span>
+        <span style="color:var(--muted);font-size:0.86rem;font-weight:600">{{ request.user.username }}</span>
+        <form method="post" action="{% url 'quiz:logout' %}" style="display:inline;margin:0">
+          {% csrf_token %}
+          <button type="submit" class="su-btn su-btn-ghost" style="padding:0.4rem 0.85rem;font-size:0.82rem">Log out</button>
+        </form>
+      </nav>
+    </header>
+    {% endif %}
+    {% if messages %}
+    <div class="su-messages">
+      {% for message in messages %}
+      <div class="su-msg {% if message.tags == 'error' %}su-msg-error{% else %}su-msg-success{% endif %}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+  {% endblock %}
+  <script>
+    (function () {
+      var bar = document.getElementById("su-cookie");
+      var btn = document.getElementById("su-cookie-ok");
+      if (!bar || !btn) return;
+      try {
+        if (!localStorage.getItem("skillup_cookie_ok")) bar.hidden = false;
+      } catch (e) { bar.hidden = false; }
+      btn.addEventListener("click", function () {
+        try { localStorage.setItem("skillup_cookie_ok", "1"); } catch (e) {}
+        bar.hidden = true;
+      });
+    })();
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
