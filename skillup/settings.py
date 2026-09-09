@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-3@m!+0*19b2u5i#q41%($93!!q(6$qr85vl#1wnflb@j*m#f_m
 DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-
+# Updated ALLOWED_HOSTS line
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".vercel.app", "skill-up-project-delta.vercel.app"]
 
 # Application definition
 
