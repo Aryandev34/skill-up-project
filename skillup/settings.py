@@ -13,7 +13,8 @@ SECRET_KEY = 'django-insecure-3@m!+0*19b2u5i#q41%($93!!q(6$qr85vl#1wnflb@j*m#f_m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".vercel.app", "skill-up-project-delta.vercel.app"]
+# Allows all Vercel deployment preview domains and localhost
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -42,7 +43,7 @@ ROOT_URLCONF = 'skillup.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.DjangoTemplates',
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -94,7 +95,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Changed to CompressedStaticFilesStorage to prevent 500 crashes on Vercel
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 LOGIN_URL = 'quiz:login'
 LOGIN_REDIRECT_URL = 'quiz:dashboard'
